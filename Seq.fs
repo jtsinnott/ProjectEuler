@@ -5,6 +5,7 @@ open System.Collections
 open System.Collections.Generic
 open System.Diagnostics
 
+(* From https://gist.github.com/latkin/0ce9deb1e6c797b097f8 *)
 module Seq =
     type private TimedEnumerator<'t>(source : IEnumerator<'t>, blockSize, f) =
         let swUpstream = Stopwatch()
