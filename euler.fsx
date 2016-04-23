@@ -239,18 +239,13 @@ PROBLEM 12
 *)
 let p12 () =
 
-  let nthTriNum n = seq { 1L..n } |> Seq.sum
+  let triangleNum (n : int64) = [1L..n] |> Seq.sum
   
-  let start = (>) ([1L..500L] |> Seq.reduce (*))
-  Seq.unfold (fun i -> Some(i, i + 1L)) 1L
-  |> Seq.map nthTriNum
-  |> Seq.filter (isPrime >> not)
-  |> Seq.map (fun x -> (x, (divisors x |> Seq.length)))
-  |> Seq.map (fun x -> printfn "%A" x; x)
-  |> Seq.filter (fun (x, d) -> d > 500)
+  Seq.unfold (fun i -> Some (i, i+1L)) 1L
+  |> Seq.map (fun n -> triangleNum n)
+  |> Seq.filter (fun n -> Seq.length (divisors n) >= 500)
   |> Seq.head
-  |> fst
-   
+  
 p12 ()
 
 (*

@@ -2,11 +2,22 @@
 
 module Utils =
 
+  let memoize f =
+    let cache = new System.Collections.Generic.Dictionary<_,_>()
+    fun x ->
+      if cache.ContainsKey(x) then cache.[x]
+      else
+        let res = f x
+        cache.[x] <- res
+        res
+
   let sqrt' (x : int64) = int64(sqrt(float(x)))
 
   let divisors x =
-    seq { 1L..x }
+    seq { 1L..int64(sqrt'(x)) }
     |> Seq.filter (fun i -> x % i = 0L)
+    
+    // |> Seq.collect (fun x -> [x; n/x])
 
   let isPrime x =
     if x = 2L || x = 3L then true
