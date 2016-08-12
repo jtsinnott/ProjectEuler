@@ -5,6 +5,9 @@
 open Euler.Utils
 open Euler.Seq
 open System
+open System.Text.RegularExpressions
+
+Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 
 (* https://projecteuler.net/archives *)
 
@@ -93,17 +96,20 @@ let p16 () =
 //p16 ()
 
 (* PROBLEM 17 *)
-let p17() =
+let p17 () =
   let rec numWord = function
     | 0  -> "" | 1 -> "one" | 2 -> "two" | 3 -> "three" | 4 -> "four"
     | 5  -> "five" | 6 -> "six" | 7 -> "seven" | 8 -> "eight" | 9 -> "nine"
     | 11 -> "eleven" | 12 -> "twelve" | 13 -> "thirteen" | 14 -> "fourteen"
     | 15 -> "fifteen" | 16 -> "sixteen" | 17 -> "seventeen" | 18 -> "eighteen"
     | 19 -> "nineteen"
-    | 10 -> "ten" | 20 -> "twenty" | 30 -> "thirty" | 40 -> "fourty"
+    | 10 -> "ten" | 20 -> "twenty" | 30 -> "thirty" | 40 -> "forty"
     | 50 -> "fifty" | 60 -> "sixty" | 70 -> "seventy" | 80 -> "eighty"
     | 90 -> "ninety"
     | 1000 -> "one thousand"
+    | n when n % 100 = 0  ->
+      let hundreds = numWord (n / 100)
+      sprintf "%s hundred" hundreds
     | n when n / 100 >= 1 ->
       let hundreds = numWord (n / 100)
       let rest = numWord (n % 100)
@@ -114,6 +120,60 @@ let p17() =
       sprintf "%s-%s" tens ones
     | n -> sprintf "unknown number %d" n
 
-  [1..1000] |> List.sumBy (numWord >> String.length)
+  let cleanWord word = Regex.Replace (word, "[\W-]", "")
+
+  [1..1000] |> List.sumBy (numWord >> cleanWord >> String.length)
 
 //p17 ()
+
+(* PROBLEM 18 *)
+let p18 () =
+  let nums =
+    IO.File.ReadAllLines ("p18.txt")
+    |> Array.map (fun l -> l.Split (' ') |> Array.map int)
+    |> List.ofArray
+
+  let rec sumPaths (acc : int list) (nums : int [] list) =
+    match nums with
+    | []        -> acc
+    | h :: rest ->
+      let tmp = Array.create (h.Length) 0
+      acc |> List.iteri (fun i e ->
+        h |> Array.iteri (fun j f ->
+          if i = j || (i + 1) = j then
+            tmp.[j] <- max tmp.[j] (e + f)))
+      sumPaths (List.ofArray tmp) rest
+
+  (sumPaths [0] nums) |> List.max
+
+//p18 ()
+
+(* PROBLEM 19 *)
+let p19 () =
+  let daysInMonth year month =
+    let isLeapYear = year % 4 = 0 && (year % 100 <> 0 || year % 400 = 0)
+    match month with
+    | 2              -> if isLeapYear then 29 else 28
+    // Sep, Apr, Jun, Nov
+    | 9 | 4 | 6 | 11 -> 30
+    | _              -> 31
+
+  let dayOfWeek daysSinceJan_1_1900 =
+    match (daysSinceJan_1_1900 % 7) with
+    | 0 -> "Monday"   | 1 -> "Tuesday" | 2 -> "Wednesday"
+    | 3 -> "Thursday" | 4 -> "Friday"  | 5 -> "Saturday"
+    | 6 -> "Sunday"
+    | n -> invalidArg "daysSinceJan_1_1900"
+            (sprintf "Must be 1..7 but was %d" n)
+
+  seq {
+    for y in 1901..2000 do
+      let daysInMonth' = daysInMonth y
+      for m in 1..12 do
+        yield (y, m, daysInMonth' m, 0)
+  }
+  |> Seq.tail // We'll seed Jan 1901 below.
+  |> Seq.scan (
+      fun (_, _, dm, dt) (y, m, dm', _) -> (y, m, dm', dm + dt)) (1901,1,31,0)
+  |> Seq.filter (fun (y, m, dm, dt) -> (dayOfWeek dt) = "Sunday")
+  |> Seq.length
