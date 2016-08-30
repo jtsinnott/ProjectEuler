@@ -158,22 +158,28 @@ let p19 () =
     | 9 | 4 | 6 | 11 -> 30
     | _              -> 31
 
-  let dayOfWeek daysSinceJan_1_1900 =
-    match (daysSinceJan_1_1900 % 7) with
-    | 0 -> "Monday"   | 1 -> "Tuesday" | 2 -> "Wednesday"
-    | 3 -> "Thursday" | 4 -> "Friday"  | 5 -> "Saturday"
-    | 6 -> "Sunday"
-    | n -> invalidArg "daysSinceJan_1_1900"
-            (sprintf "Must be 1..7 but was %d" n)
+  let isSunday daysSinceJan_1_1900 = (daysSinceJan_1_1900 % 7) = 6
 
   seq {
-    for y in 1901..2000 do
+    for y in 1900..2000 do
       let daysInMonth' = daysInMonth y
       for m in 1..12 do
         yield (y, m, daysInMonth' m, 0)
   }
-  |> Seq.tail // We'll seed Jan 1901 below.
+  |> Seq.skip 1 // We'll seed Jan 1900 below.
   |> Seq.scan (
-      fun (_, _, dm, dt) (y, m, dm', _) -> (y, m, dm', dm + dt)) (1901,1,31,0)
-  |> Seq.filter (fun (y, m, dm, dt) -> (dayOfWeek dt) = "Sunday")
+      fun (_, _, dm, dt) (y, m, dm', _) -> (y, m, dm', dm + dt)) (1900,1,31,0)
+  |> Seq.filter (fun (y, _, _, dt) -> y > 1900 && isSunday dt)
   |> Seq.length
+
+//p19 ()
+
+(* PROBLEM 20 *)
+let p20 () =
+  let rec fac (n : bigint) =
+    match n with n when n = 0I -> 1I | n -> n * fac (n - 1I)
+  (fac 100I |> string).ToCharArray()
+  |> Array.map (string >> Int32.TryParse >> snd)
+  |> Array.sum
+
+//p20 ()

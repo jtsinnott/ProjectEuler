@@ -35,6 +35,12 @@ let p2 () =
   |> Seq.where (fun x -> x % 2 = 0)
   |> Seq.sum
 
+let p2' () =
+  let rec fib = function
+    | 0 -> 0
+    | 1 -> 1
+    | n -> fib (n - 1) + fib (n - 2)
+  seq { 1..100 } |> Seq.map fib
 //p2 ()
 
 (* PROBLEM 3 *)
