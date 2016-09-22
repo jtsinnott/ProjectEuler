@@ -20,8 +20,6 @@ module Utils =
     |> Seq.filter (fun i -> x % i = 0L)
     |> Seq.collect (fun i -> [i; x/i])
 
-    // |> Seq.collect (fun x -> [x; n/x])
-
   let isPrime x =
     if x = 2L || x = 3L then true
     else

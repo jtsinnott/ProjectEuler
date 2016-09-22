@@ -176,8 +176,7 @@ let p19 () =
 
 (* PROBLEM 20 *)
 let p20 () =
-  let rec fac (n : bigint) =
-    match n with n when n = 0I -> 1I | n -> n * fac (n - 1I)
+  let rec fac (n : bigint) = if n = 0I then 1I else n * fac (n - 1I)
   (fac 100I |> string).ToCharArray()
   |> Array.map (string >> Int32.TryParse >> snd)
   |> Array.sum
