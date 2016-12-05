@@ -27,6 +27,7 @@ let p21 () =
 
 // p21 ()
 
+
 // Mutable version is 10x faster.
 let p21' () =
   let d n =

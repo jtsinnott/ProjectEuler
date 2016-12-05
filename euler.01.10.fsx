@@ -106,7 +106,7 @@ let p9 () =
   seq { for a = 1 to 1000 do
           for b = 1 to (1000-a) do
             let c = 1000 - a - b
-            if a*a + b*b = c*c then
+            if a * a + b * b = c * c then
               yield (a, b, c) }
   |> Seq.distinctBy (fun (a, b, c) -> a + b + c)
   |> Seq.map (fun (a, b, c) -> a * b * c)
