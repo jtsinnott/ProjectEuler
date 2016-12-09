@@ -19,6 +19,9 @@ module Utils =
     seq { 1L..sqrt'(x) }
     |> Seq.filter (fun i -> x % i = 0L)
     |> Seq.collect (fun i -> [i; x/i])
+    |> Seq.distinct
+
+  let properDivisors x = divisors x |> Seq.filter ((<>) x)
 
   let isPrime x =
     if x = 2L || x = 3L then true
@@ -39,5 +42,5 @@ module Utils =
     let chars = x.ToCharArray()
     chars = (Array.rev chars)
 
-  let charToInt (c : Char) = Int32.TryParse(string c) |> snd
+  let charToInt (c : Char) = snd (Int32.TryParse (string c))
   let product charr = charr |> Array.map charToInt |> Array.reduce (*)
