@@ -35,6 +35,7 @@ let p2 () =
   |> Seq.where (fun x -> x % 2 = 0)
   |> Seq.sum
 
+// Tree-recursive version
 let p2' () =
   let rec fib = function
     | 0 -> 0
